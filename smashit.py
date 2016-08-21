@@ -5,16 +5,19 @@ import sys
 import select
 
 class SmashItEngine:
-    def __init__(self, ui, choice_function=random.choice):
+    def __init__(self, ui, xp, lvl, choice_function=random.choice):
         self.ui = ui
         self.choice_function = choice_function
         self.actions = ["bopit", "smashit", "twizzleit"]
+        self.xp = xp
+        self.lvl = lvl
+
 
     def start(self):
         response_time = 5
         self.ui.start()
         while True:
-            response = self.take_turn(response_time)
+            response = self.take_turn()
             if response == True:
                 self.ui.correct()
             elif response == False:
@@ -29,13 +32,37 @@ class SmashItEngine:
     def next_action(self):
         return self.choice_function(self.actions)
 
-    def take_turn(self, response_time):
+    def take_turn(self):
+        self.xp += 1
         action = self.next_action()
-        return self.ui.get_response_to(action, response_time)
-        
-        """
-        (5. Future requirement level up)
-        """
+        if self.lvl == 1:
+            self.level_up(5)
+            return self.ui.get_response_to(action, 5)
+
+        elif self.lvl == 2:
+            self.level_up(4)
+            return self.ui.get_response_to(action, 4)
+
+        elif self.lvl == 3: 
+            self.level_up(3)
+            return self.ui.get_response_to(action, 3)
+
+        elif self.lvl == 4:
+            self.level_up(2)
+            return self.ui.get_response_to(action, 2) 
+
+        else:
+            self.level_up(1)
+            return self.ui.get_response_to(action, 1)
+
+    def level_up(self, response_time):
+        if self.xp >= 5:
+            print("\nLevel Up!\nResponse Time is now: {}\n".format(response_time))
+            self.xp = 0
+            self.lvl += 1
+        else:
+            pass
+
 
 class SmashItTextUI:
     def __init__(self):
@@ -46,9 +73,9 @@ class SmashItTextUI:
             "twizzleit": "Twizzle It! (press T)"
         }
         self.action_expected = {
-            "bopit": "B",
-            "smashit": "S",
-            "twizzleit": "T"
+            "bopit": "b",
+            "smashit": "s",
+            "twizzleit": "t"
         }
 
     def get_response_to(self, action, response_time):
@@ -60,7 +87,7 @@ class SmashItTextUI:
             return None
 
         expected_response = self.action_expected[action]
-        return user_response.strip() == expected_response
+        return user_response.strip().lower() == expected_response
 
     def get_response_from_user(self, response_time):
         i, o, e = select.select([sys.stdin], [], [], response_time)
@@ -79,7 +106,7 @@ class SmashItTextUI:
         print("Starting Game...")
 
 ui = SmashItTextUI()
-smashitengine = SmashItEngine(ui)
+smashitengine = SmashItEngine(ui, 0, 1)
 smashitengine.start()
 
 

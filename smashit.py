@@ -26,8 +26,6 @@ class SmashItEngine:
             else:
                 self.ui.timedout()
                 break
-            
-            
 
     def next_action(self):
         return self.choice_function(self.actions)
@@ -35,24 +33,11 @@ class SmashItEngine:
     def take_turn(self):
         self.xp += 1
         action = self.next_action()
-        if self.lvl == 1:
-            self.level_up(5)
-            return self.ui.get_response_to(action, 5)
-
-        elif self.lvl == 2:
-            self.level_up(4)
-            return self.ui.get_response_to(action, 4)
-
-        elif self.lvl == 3: 
-            self.level_up(3)
-            return self.ui.get_response_to(action, 3)
-
-        elif self.lvl == 4:
-            self.level_up(2)
-            return self.ui.get_response_to(action, 2) 
-
+        resp_time = 6 - self.lvl
+        self.level_up(resp_time)
+        if self.lvl > 1:
+            return self.ui.get_response_to(action, resp_time)
         else:
-            self.level_up(1)
             return self.ui.get_response_to(action, 1)
 
     def level_up(self, response_time):
@@ -95,13 +80,13 @@ class SmashItTextUI:
 
     def fail(self):
         print("You Lose!")
-        
+
     def correct(self):
         print("Correct!!")
-        
+
     def timedout(self):
         print("Too Slow!")
-        
+
     def start(self):
         print("Starting Game...")
 

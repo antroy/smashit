@@ -27,6 +27,12 @@ class SmashItEngine:
                 self.ui.timedout()
                 break
 
+    def end(self):
+        print("The Game Has Ended!")
+        print("You Got To Level ", self.lvl)
+        yn = input("Try Again(Y/N)? ")
+        yn.capitalise
+
     def next_action(self):
         return self.choice_function(self.actions)
 
@@ -80,12 +86,14 @@ class SmashItTextUI:
 
     def fail(self):
         print("You Lose!")
+        SmashItEngine.end()
 
     def correct(self):
         print("Correct!!")
 
     def timedout(self):
         print("Too Slow!")
+        SmashItEngine.end()
 
     def start(self):
         print("Starting Game...")
